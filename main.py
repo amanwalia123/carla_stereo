@@ -8,29 +8,55 @@
 
 from utility import *
 
-# parser = argparse.ArgumentParser(description="Generate dataset using CARLA")
+parser = argparse.ArgumentParser(description="Generate dataset using CARLA")
 
-# parser.add_argument('--town',default="Town01",
-#                     choices=["Town01","Town02","Town03","Town04","Town05"],
-#                     help="town map to run")
+parser.add_argument('-t','--town',default="Town01",
+                    choices=["Town01","Town02","Town03","Town04","Town05"],
+                    help="town map to run")
 
+parser.add_argument('-d','--dim',type=int,nargs='+',
+                    default=[1024, 1920, 720, 1280],
+                    help="rgb_height, rgb_width, gated_height, gated_width")
+
+parser.add_argument('-f','--focal_length',type=float,nargs='+',
+                    default=[2.32239990e+03, 2.32239990e+03, 2.35572290e+03],
+                    help="rgb left focal length , rgb right focal length, gated focal length")
+
+parser.add_argument('-b','--baseline',type=float,
+                    default=0.202993,
+                    help="RGB stereo baseline")
+
+parser.add_argument('-n','--night_mode',action='store_false',
+                    help="activate night mode")
+
+parser.add_argument('-c','--frame_count',type=int,
+                    default=1500,
+                    help='number of frames to capture')
+
+
+parser.add_argument('-r','--results_dir',type=str,
+                    default="/media/aman/HDD2",
+                    help='number of frames to capture')
+
+
+args = parser.parse_args()
 # savedir = ""
 
-TOWN = "Town01"
-NIGHT_MODE = False
+TOWN = args.town
+NIGHT_MODE = args.night_mode
 
-IMAGE_WIDTH=1920
-IMAGE_HEIGHT=1280
+IMAGE_WIDTH = args.dim[1]
+IMAGE_HEIGHT = args.dim[0]
 
-GATED_WIDTH=1280
-GATED_HEIGHT=720
+GATED_WIDTH = args.dim[3]
+GATED_HEIGHT = args.dim[2]
 
-BASELINE = 1.2
+BASELINE = args.baseline
 
-MAX_FRAMES = 1500
+MAX_FRAMES = args.frame_count
 
 daytime = "day" if not NIGHT_MODE else "night"
-RESULT_DIR = "/mnt/HDD/CARLA_dataset/{}_{}".format(daytime,TOWN)
+RESULT_DIR = "{}/{}_{}".format(args.results_dir,daytime,TOWN)
 
 
 cam0_dir = "%s/%s"%(RESULT_DIR,"cam_left")
@@ -85,22 +111,22 @@ def main():
         actor_list.append(vehicle)
         vehicle.set_simulate_physics(False)
 
-        rgb_cam0 = RGBCamera(vehicle,"Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT).construct_sensor()
+        rgb_cam0 = RGBCamera(vehicle,"Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[0]).construct_sensor()
         actor_list.append(rgb_cam0)
         
-        rgb_cam1 = RGBCamera(vehicle,"Right Camera",pos_x=1.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT).construct_sensor()
+        rgb_cam1 = RGBCamera(vehicle,"Right Camera",pos_x=1.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[1]).construct_sensor()
         actor_list.append(rgb_cam1)
 
-        gated_cam = RGBCamera(vehicle,"Gated Camera",pos_x=1.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT).construct_sensor()
+        gated_cam = RGBCamera(vehicle,"Gated Camera",pos_x=1.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT,focal_length=args.focal_length[2]).construct_sensor()
         actor_list.append(gated_cam)
 
-        depth_cam0 = DepthCamera(vehicle,"(Depth)Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT).construct_sensor()
+        depth_cam0 = DepthCamera(vehicle,"(Depth)Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[0]).construct_sensor()
         actor_list.append(depth_cam0)
         
-        depth_cam1 = DepthCamera(vehicle,"(Depth)Right Camera",pos_x=-0.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT).construct_sensor()
+        depth_cam1 = DepthCamera(vehicle,"(Depth)Right Camera",pos_x=-0.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[1]).construct_sensor()
         actor_list.append(depth_cam1)
 
-        depth_gated = DepthCamera(vehicle,"(Depth)Gated Camera",pos_x=-0.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT).construct_sensor()
+        depth_gated = DepthCamera(vehicle,"(Depth)Gated Camera",pos_x=-0.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT,focal_length=args.focal_length[2]).construct_sensor()
         actor_list.append(depth_gated)
 
         # Create a synchronous mode context.
