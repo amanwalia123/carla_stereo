@@ -22,6 +22,10 @@ parser.add_argument('-f','--focal_length',type=float,nargs='+',
                     default=[2.32239990e+03, 2.32239990e+03, 2.35572290e+03],
                     help="rgb left focal length , rgb right focal length, gated focal length")
 
+parser.add_argument('-v','--fov',type=float,nargs='+',
+                    default=[44.343, 44.343, 30.81],
+                    help="rgb left fov , rgb right fov, gated fov")
+
 parser.add_argument('-b','--baseline',type=float,
                     default=0.202993,
                     help="RGB stereo baseline")
@@ -111,22 +115,22 @@ def main():
         actor_list.append(vehicle)
         vehicle.set_simulate_physics(False)
 
-        rgb_cam0 = RGBCamera(vehicle,"Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[0]).construct_sensor()
+        rgb_cam0 = RGBCamera(vehicle,"Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[0], fov=args.fov[0]).construct_sensor()
         actor_list.append(rgb_cam0)
         
-        rgb_cam1 = RGBCamera(vehicle,"Right Camera",pos_x=1.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[1]).construct_sensor()
+        rgb_cam1 = RGBCamera(vehicle,"Right Camera",pos_x=1.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[1], fov=args.fov[1]).construct_sensor()
         actor_list.append(rgb_cam1)
 
-        gated_cam = RGBCamera(vehicle,"Gated Camera",pos_x=1.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT,focal_length=args.focal_length[2]).construct_sensor()
+        gated_cam = RGBCamera(vehicle,"Gated Camera",pos_x=1.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT,focal_length=args.focal_length[2], fov=args.fov[2]).construct_sensor()
         actor_list.append(gated_cam)
 
-        depth_cam0 = DepthCamera(vehicle,"(Depth)Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[0]).construct_sensor()
+        depth_cam0 = DepthCamera(vehicle,"(Depth)Left Camera",pos_x=1.2,pos_y=-BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[0], fov=args.fov[0]).construct_sensor()
         actor_list.append(depth_cam0)
         
-        depth_cam1 = DepthCamera(vehicle,"(Depth)Right Camera",pos_x=-0.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[1]).construct_sensor()
+        depth_cam1 = DepthCamera(vehicle,"(Depth)Right Camera",pos_x=-0.2,pos_y=BASELINE/2,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=IMAGE_WIDTH,image_size_y=IMAGE_HEIGHT,focal_length=args.focal_length[1], fov=args.fov[1]).construct_sensor()
         actor_list.append(depth_cam1)
 
-        depth_gated = DepthCamera(vehicle,"(Depth)Gated Camera",pos_x=-0.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT,focal_length=args.focal_length[2]).construct_sensor()
+        depth_gated = DepthCamera(vehicle,"(Depth)Gated Camera",pos_x=-0.2,pos_y=0.0,pos_z=1.5,rot_x=0,rot_y=0,rot_z=0,image_size_x=GATED_WIDTH,image_size_y=GATED_HEIGHT,focal_length=args.focal_length[2], fov=args.fov[2]).construct_sensor()
         actor_list.append(depth_gated)
 
         # Create a synchronous mode context.
